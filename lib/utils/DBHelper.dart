@@ -8,6 +8,7 @@ class DatabaseProvider {
   static const String COLUMN_ID = "id";
   static const String COLUMN_NAME = "name";
   static const String COLUMN_AMOUNT = "amount";
+  static const String COLUMN_DATE = "date";
 
   DatabaseProvider._();
   static final DatabaseProvider db = DatabaseProvider._();
@@ -39,7 +40,8 @@ class DatabaseProvider {
           "CREATE TABLE $TABLE ("
           "$COLUMN_ID INTEGER PRIMARY KEY,"
           "$COLUMN_NAME TEXT,"
-          "$COLUMN_AMOUNT INTEGER"
+          "$COLUMN_AMOUNT INTEGER,"
+          "$COLUMN_DATE TEXT"
           ")",
         );
       },
@@ -49,7 +51,7 @@ class DatabaseProvider {
   Future<List<OTransaction>> gettransactions() async {
     final db = await database;
 
-    var trans = await db.query(TABLE, columns: [COLUMN_ID ,COLUMN_NAME, COLUMN_AMOUNT]);
+    var trans = await db.query(TABLE, columns: [COLUMN_ID ,COLUMN_NAME, COLUMN_AMOUNT, COLUMN_DATE]);
 
     List<OTransaction> transactionList = List<OTransaction>();
 
@@ -57,14 +59,12 @@ class DatabaseProvider {
       OTransaction trans = OTransaction.fromMap(currenttrans);
       transactionList.add(trans);
     });
-
     return transactionList;
   }
 
   Future<OTransaction> insert(OTransaction trans) async {
     final db = await database;
     trans.id = await db.insert(TABLE, trans.toMap());
-
     return trans;
   }
 
@@ -72,6 +72,7 @@ class DatabaseProvider {
   Future<int> delete(int id) async {
     final db = await database;
 
+    //db.rawQuery("DELETE FROM $TABLE WHERE $COLUMN_ID = $id");
     return await db.delete(
       TABLE,
       where: "id = ?",
@@ -81,12 +82,20 @@ class DatabaseProvider {
 
   Future<int> update(OTransaction trans) async {
     final db = await database;
-
     return await db.update(
       TABLE,
       trans.toMap(),
       where: "id = ?",
       whereArgs: [trans.id],
     );
+  }
+
+  Future calculateTotal() async {
+    final db  = await database;
+    var result = await db.rawQuery("SELECT SUM($COLUMN_AMOUNT) as Total FROM $TABLE");
+    int value = result[0]["Total"]; // value = 220
+    print ("db");
+    print (value);
+    return value;
   }
 }

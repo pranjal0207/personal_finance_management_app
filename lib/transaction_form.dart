@@ -1,10 +1,8 @@
+import 'package:intl/intl.dart';
+
 import 'Utils/DBHelper.dart';
 import 'Utils/transaction.dart';
-import 'transaction_form.dart';
 import 'package:personal_finance_management_app/events/add_transactions.dart';
-import 'package:personal_finance_management_app/events/delete_transactions.dart';
-import 'package:personal_finance_management_app/events/transaction_event.dart';
-import 'package:personal_finance_management_app/events/set_transactions.dart';
 import 'package:personal_finance_management_app/events/update_transactions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -26,8 +24,25 @@ class TransactionForm extends StatefulWidget {
 class TransactionFormState extends State<TransactionForm> {
   String _name;
   int _amount;
+  var datecontroller = TextEditingController();
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  DateTime _dateTime = DateTime.now();
+  var date;
+
+  _transactionDate (BuildContext context) async{
+    var pickdate = await showDatePicker(context: context, initialDate: _dateTime, firstDate: DateTime(2000), lastDate: _dateTime);
+
+    if (pickdate!=null){
+      setState(() {
+        date =pickdate;
+
+        datecontroller.text = DateFormat('dd-MM-yyyy').format(date);
+
+      });
+    }
+  }
 
   Widget _buildName() {
     return TextFormField(
@@ -48,7 +63,7 @@ class TransactionFormState extends State<TransactionForm> {
     );
   }
 
-  Widget _buildCalories() {
+  Widget _buildAmount() {
     return TextFormField(
       decoration: InputDecoration(labelText: 'Amount'),
       keyboardType: TextInputType.number,
@@ -56,7 +71,7 @@ class TransactionFormState extends State<TransactionForm> {
       validator: (String value) {
         int calories = int.tryParse(value);
 
-        if (calories == null || calories <= 0) {
+        if (calories == null || calories == 0) {
           return 'Amount must be greater than 0';
         }
 
@@ -65,6 +80,28 @@ class TransactionFormState extends State<TransactionForm> {
       onSaved: (String value) {
         _amount = int.parse(value);
       },
+      
+    );
+  }
+
+  Widget _builddate(BuildContext context) {
+    return TextFormField(
+      controller: datecontroller,
+      decoration: InputDecoration(
+        labelText: 'Date',
+        prefixIcon: InkWell(
+          onTap : (){
+            _transactionDate(context);
+          print(_dateTime);
+          },
+          child: Icon(Icons.calendar_today),
+        )
+      ),
+      style: TextStyle(fontSize: 28),
+      validator: (String value) {
+        return null;
+      },
+    
     );
   }
 
@@ -89,7 +126,8 @@ class TransactionFormState extends State<TransactionForm> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               _buildName(),
-              _buildCalories(),
+              _buildAmount(),
+              _builddate(context),
               SizedBox(height: 16),
 
               SizedBox(height: 20),
@@ -108,7 +146,8 @@ class TransactionFormState extends State<TransactionForm> {
 
                         OTransaction trans = OTransaction(
                           name: _name,
-                          amount: _amount
+                          amount: _amount,
+                          date : datecontroller.text
                         );
 
                         DatabaseProvider.db.insert(trans).then(
@@ -116,8 +155,8 @@ class TransactionFormState extends State<TransactionForm> {
                                 Addtransaction(storedtransaction),
                               ),
                             );
-
-                        Navigator.pop(context);
+                                                
+                          Navigator.pop(context);
                       },
                     )
                   : Row(

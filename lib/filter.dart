@@ -1,5 +1,3 @@
-import 'package:flutter/foundation.dart';
-
 import 'Utils/DBHelper.dart';
 import 'Utils/transaction.dart';
 import 'transaction_form.dart';
@@ -19,13 +17,6 @@ class TransactionList extends StatefulWidget {
 class _TransactionListState extends State<TransactionList> {
   
   int sum;
-  double budget = 10000.0;
-  double percent = 0;
-  String name = "User";
-  String curmonth = "temp";
-  List months = ['January' , 'February','March','April','May','June','July','August','September','October','Novomber','December'];
-  var controller1 = new TextEditingController();
-  var controller2 = new TextEditingController();
 
   @override
   void initState() {
@@ -36,36 +27,20 @@ class _TransactionListState extends State<TransactionList> {
         BlocProvider.of<TransactionBloc>(context).add(SetTransactions(transactionList));
       },
     );
-    int cur = DateTime.now().month;
-    curmonth = months[cur-1];
-    
   }
 
   var temp;
   void _calcTotal() async{
+
     var total = (await DatabaseProvider.db.calculateTotal());
     print("njfsfj");
     print(total);
     if (total == null) {
       sum = 0;
-      percent = ((budget - sum)/budget);
-      print (percent);
-      //int cur = DateTime.now().month;
-      //print  (months[cur-1]);
-      //curmonth = months[cur-1];
       return;
     }
+    setState(() => sum = total);
 
-    percent = ((budget - sum)/budget);
-    print (percent);  
-    /*int cur = DateTime.now().month;
-    print  (months[cur-1]);*/
-
-    setState(() {
-      sum = total;
-      percent = percent;
-      //curmonth = months[cur+1];
-    });  
 }
 
   int selectedIndex = 0;
@@ -85,9 +60,9 @@ class _TransactionListState extends State<TransactionList> {
       context: context,
       builder: (context) => AlertDialog(
         title: Text(transaction.name),
-        content: Text("Amount Rs.${transaction.amount} \nDate : .${transaction.date}"),
+        content: Text("Amount Rs.${transaction.amount}"),
         actions: <Widget>[
-          /*FlatButton(
+          FlatButton(
             onPressed: () => Navigator.pushReplacement(
               context,
               MaterialPageRoute(
@@ -95,7 +70,7 @@ class _TransactionListState extends State<TransactionList> {
               ),
             ),
             child: Text("Update"),
-          ),*/
+          ),
           FlatButton(
             onPressed: () => DatabaseProvider.db.delete(transaction.id).then((_) {
               BlocProvider.of<TransactionBloc>(context).add(
@@ -107,71 +82,6 @@ class _TransactionListState extends State<TransactionList> {
           ),
         ],
       ),
-    );
-  }
-
-  showsettingDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context){
-        return AlertDialog(
-          title: Text("Settings"),
-          content : Stack(children: <Widget>[
-            Container(
-              margin: EdgeInsets.only(top :0),
-              child: TextFormField(
-              controller: controller1,
-              //initialValue: name,
-              decoration: InputDecoration(labelText: 'Name'),
-              maxLength: 15,
-              style: TextStyle(fontSize: 20),
-              validator: (String value) {
-                if (value.isEmpty) {
-                  return 'Name is Required';
-                }
-
-                return null;
-              }
-            ),
-
-            ),
-
-            Container(
-              margin: EdgeInsets.only(top : 65),
-              child: TextFormField(
-              controller: controller2,
-              //initialValue: budget.toString(),
-              decoration: InputDecoration(labelText: 'Budget'),
-              maxLength: 15,
-              style: TextStyle(fontSize: 20),
-              validator: (String value) {
-                int calories = int.tryParse(value);
-
-                if (calories == null || calories == 0) {
-                  return 'Amount must be greater than 0';
-                }
-                return null;
-              },
-              )
-            ),  
-    
-            Container(
-              margin: EdgeInsets.only(top : 140),
-              child: FlatButton(
-            onPressed: (){
-                setState(() {
-                  name = controller1.text;
-                  budget = double.parse(controller2.text);
-                });
-                
-            }, 
-            child: Text("Save")
-            ),)
-           
-          ]
-          ) 
-        );
-      }
     );
   }
 
@@ -193,70 +103,18 @@ class _TransactionListState extends State<TransactionList> {
                     bottomRight: Radius.circular(30),
                   ),
                   color : Colors.blue,
-                ),           
-              ),
-
-              Container(
-                height:  25,
-                margin: EdgeInsets.only(top : 20, left : 30),
-                child: Row(
-                  
-                  children : [
-                    Text (
-                      "Hello " + name + "!",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 25
-                      ),
-                    ),
-
-                    FlatButton(
-                      padding: EdgeInsets.only(left : 200),
-                      onPressed : () => showsettingDialog(context) ,
-                      child: Icon(Icons.settings))
-                  ]
-                  ),
+                   
                 ),
-
-              Container(
-                height: 25,
-                margin: EdgeInsets.only(top : 70, left: 30),
-                child: Text(
-                  curmonth,                  
-                  style : TextStyle(
-                    color : Colors.white,
-                    fontSize: 25
-                  )
-                )
-              ),
-
-              Container(
-                height: 30,
-                margin: EdgeInsets.only(top : 110, left: 30),
-                child: Text(
-                  'Rs. ' + (sum).toString(),
-                  style : TextStyle(
-                    color : Colors.white,
-                    fontSize: 30
-                  )
-                )
-              ),
-
-
-              Container(
-                height : 20,
-                margin: EdgeInsets.only(top : 170, left: 20, right : 20),
-                child: Column(
-                  children: [
-                  LinearProgressIndicator(
-                  value : (percent),
-                  backgroundColor: Colors.white,
-                  valueColor: AlwaysStoppedAnimation(Colors.yellow),
-                  ),
-
-                  Text(((budget-sum) / budget * 100).toStringAsFixed(2) + "%"),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Text(sum.toString()),
                   ],
                 ),
+              ),
+
+              Container(
+
               ),
 
               Container(
@@ -274,7 +132,7 @@ class _TransactionListState extends State<TransactionList> {
                     return ListTile(
                         title: Text(trans.name, style: TextStyle(fontSize: 30)),
                         subtitle: Text(
-                        "Amount: Rs. ${trans.amount} \nDate : ${trans.date}",
+                        "Amount: Rs. ${trans.amount}",
                           style: TextStyle(fontSize: 20),
                         ),
                         onTap: () => showtransactionDialog(context, trans, index));
@@ -286,6 +144,8 @@ class _TransactionListState extends State<TransactionList> {
                 listener: (BuildContext context, transList) {},
               ),
             ),
+
+            
           ]
           )           
         ),
