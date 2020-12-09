@@ -4,6 +4,7 @@ import 'package:personal_finance_management_app/events/transaction_event.dart';
 import 'package:personal_finance_management_app/events/set_transactions.dart';
 import 'package:personal_finance_management_app/events/update_transactions.dart';
 import 'package:personal_finance_management_app/Utils/transaction.dart';
+import 'package:personal_finance_management_app/events/set_filter.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class TransactionBloc extends Bloc<TransactionEvent, List<OTransaction>> {
@@ -28,6 +29,8 @@ class TransactionBloc extends Bloc<TransactionEvent, List<OTransaction>> {
       List<OTransaction> newState = List.from(state);
       newState[event.transactionIndex] = event.newTransaction;
       yield newState;
+    }else if (event is SetFilter) {
+      yield event.filterList;
     }
   }
 }

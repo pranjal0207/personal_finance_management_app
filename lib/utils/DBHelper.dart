@@ -51,7 +51,26 @@ class DatabaseProvider {
   Future<List<OTransaction>> gettransactions() async {
     final db = await database;
 
-    var trans = await db.query(TABLE, columns: [COLUMN_ID ,COLUMN_NAME, COLUMN_AMOUNT, COLUMN_DATE]);
+    var trans = await db.query(TABLE, columns: [COLUMN_ID ,COLUMN_NAME, COLUMN_AMOUNT, COLUMN_DATE], orderBy : "date DESC");
+
+    List<OTransaction> transactionList = List<OTransaction>();
+
+    trans.forEach((currenttrans) {
+      OTransaction trans = OTransaction.fromMap(currenttrans);
+      transactionList.add(trans);
+    });
+    return transactionList;
+  }
+
+  Future<List<OTransaction>> getfilters(int f, int l, String d) async {
+    final db = await database;
+    if (d == null){
+      d = " ";
+    }
+
+    print (d);    
+    String date = "%"+d+"%";
+    var trans = await db.query(TABLE, columns: [COLUMN_ID ,COLUMN_NAME, COLUMN_AMOUNT, COLUMN_DATE], where: "$COLUMN_AMOUNT between $f and $l and $COLUMN_DATE LIKE '$date'");
 
     List<OTransaction> transactionList = List<OTransaction>();
 
@@ -67,7 +86,6 @@ class DatabaseProvider {
     trans.id = await db.insert(TABLE, trans.toMap());
     return trans;
   }
-
 
   Future<int> delete(int id) async {
     final db = await database;
@@ -94,7 +112,9 @@ class DatabaseProvider {
     final db  = await database;
     var result = await db.rawQuery("SELECT SUM($COLUMN_AMOUNT) as Total FROM $TABLE");
     int value = result[0]["Total"]; // value = 220
+
     print ("db");
+    print ("sum = ");
     print (value);
     return value;
   }

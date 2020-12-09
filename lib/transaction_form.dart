@@ -80,7 +80,6 @@ class TransactionFormState extends State<TransactionForm> {
       onSaved: (String value) {
         _amount = int.parse(value);
       },
-      
     );
   }
 

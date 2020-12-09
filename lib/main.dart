@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import 'package:personal_finance_management_app/bloc/transaction_bloc.dart';  
 import 'package:personal_finance_management_app/transaction_list.dart';
 

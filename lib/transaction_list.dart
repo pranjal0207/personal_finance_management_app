@@ -1,5 +1,4 @@
 import 'package:flutter/foundation.dart';
-
 import 'Utils/DBHelper.dart';
 import 'Utils/transaction.dart';
 import 'transaction_form.dart';
@@ -8,6 +7,7 @@ import 'package:personal_finance_management_app/events/set_transactions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'bloc/transaction_bloc.dart';
+import 'filter.dart';
 
 class TransactionList extends StatefulWidget {
   const TransactionList({Key key}) : super(key: key);
@@ -185,11 +185,11 @@ class _TransactionListState extends State<TransactionList> {
           child: Stack(
             children :  <Widget>[
               Container(  
-                margin: EdgeInsets.only(bottom: 450),
+                margin: EdgeInsets.only(bottom: 460),
                 height: 450,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.only(
-                    bottomLeft : Radius.circular(20), 
+                    bottomLeft : Radius.circular(30), 
                     bottomRight: Radius.circular(30),
                   ),
                   color : Colors.blue,
@@ -198,7 +198,7 @@ class _TransactionListState extends State<TransactionList> {
 
               Container(
                 height:  25,
-                margin: EdgeInsets.only(top : 20, left : 30),
+                margin: EdgeInsets.only(top : 20, left : 17),
                 child: Row(
                   
                   children : [
@@ -211,7 +211,7 @@ class _TransactionListState extends State<TransactionList> {
                     ),
 
                     FlatButton(
-                      padding: EdgeInsets.only(left : 200),
+                      padding: EdgeInsets.only(left : 220),
                       onPressed : () => showsettingDialog(context) ,
                       child: Icon(Icons.settings))
                   ]
@@ -220,47 +220,85 @@ class _TransactionListState extends State<TransactionList> {
 
               Container(
                 height: 25,
-                margin: EdgeInsets.only(top : 70, left: 30),
+                margin: EdgeInsets.only(top :55, left: 17),
                 child: Text(
                   curmonth,                  
                   style : TextStyle(
                     color : Colors.white,
-                    fontSize: 25
+                    fontSize: 20
                   )
                 )
               ),
 
               Container(
                 height: 30,
-                margin: EdgeInsets.only(top : 110, left: 30),
+                margin: EdgeInsets.only(top : 121, left: 17),
                 child: Text(
-                  'Rs. ' + (sum).toString(),
+                  '₹ ',
                   style : TextStyle(
                     color : Colors.white,
-                    fontSize: 30
+                    fontSize: 27
                   )
                 )
               ),
 
+              Container(
+                height: 50,
+                margin: EdgeInsets.only (top : 105, left : 40),
+                child: Text(
+                  (sum).toString(),
+                  style: TextStyle(
+                    color : Colors.white,
+                    fontSize: 45
+                  ),
+                ),
+              ),
+
 
               Container(
-                height : 20,
-                margin: EdgeInsets.only(top : 170, left: 20, right : 20),
+                height : 30,
+                margin: EdgeInsets.only(top : 165, left: 20),
                 child: Column(
                   children: [
-                  LinearProgressIndicator(
-                  value : (percent),
-                  backgroundColor: Colors.white,
-                  valueColor: AlwaysStoppedAnimation(Colors.yellow),
+
+                  Container(
+                    margin: EdgeInsets.only(right: 80),
+                    child: LinearProgressIndicator(
+                    value : (percent),
+                    backgroundColor: Colors.white,
+                    valueColor: AlwaysStoppedAnimation(Colors.yellow),
+                  ),
                   ),
 
-                  Text(((budget-sum) / budget * 100).toStringAsFixed(2) + "%"),
+                  
+
+                  
                   ],
                 ),
               ),
 
               Container(
-                margin: EdgeInsets.only(top: 250, bottom: 0),
+                margin: EdgeInsets.only(top : 158, left : 340),
+                child: Text(
+                    ((budget-sum) / budget * 100).toStringAsFixed(0) + "%",
+                    style: TextStyle(
+                      color: Colors.white,
+                    ),), 
+              ),
+
+              Container(
+                margin: EdgeInsets.only (left :  17, top : 178),
+                child : Text(
+                  "Remaining Budget : ₹ "+ (budget-sum).toStringAsFixed(0),
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                  ),
+                )
+              ),
+
+              Container(
+                margin: EdgeInsets.only(top: 240, bottom: 0),
                 child: BlocConsumer<TransactionBloc, List<OTransaction>>(
                 builder: (context, transactionList) {
                 return ListView.separated(
@@ -271,13 +309,30 @@ class _TransactionListState extends State<TransactionList> {
 
                     OTransaction trans = transactionList[index];
                     
-                    return ListTile(
-                        title: Text(trans.name, style: TextStyle(fontSize: 30)),
-                        subtitle: Text(
-                        "Amount: Rs. ${trans.amount} \nDate : ${trans.date}",
-                          style: TextStyle(fontSize: 20),
-                        ),
-                        onTap: () => showtransactionDialog(context, trans, index));
+                    return (
+                      
+                      Container(
+                        margin: EdgeInsets.only(left : 6, right : 6),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.only(
+                            bottomLeft : Radius.circular(10), 
+                            bottomRight: Radius.circular(10),
+                            topLeft: Radius.circular(10),
+                            topRight: Radius.circular(10)
+                          ),
+                          color: Colors.black12
+                        ),   
+                        child : 
+                        ListTile(
+                          title: Text(trans.name, style: TextStyle(fontSize: 30)),
+                          subtitle: Text(
+                          "₹ ${trans.amount} \nDate : ${trans.date}",
+                            style: TextStyle(
+                              fontSize: 20),
+                          ),
+                          onTap: () => showtransactionDialog(context, trans, index)),
+                      )
+                    );
                   },
                   itemCount: transactionList.length,
                   separatorBuilder: (BuildContext context, int index) => Divider(color: Colors.black),
@@ -292,7 +347,7 @@ class _TransactionListState extends State<TransactionList> {
       ),
        
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colors.grey,
+        backgroundColor: Colors.blue,
         items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
               icon: Icon(Icons.home), title: Text('Home')),
@@ -302,7 +357,8 @@ class _TransactionListState extends State<TransactionList> {
               icon: Icon(Icons.filter_list), title: Text('Filters')),
         ],
         currentIndex: selectedIndex,
-        fixedColor: Colors.deepPurple,
+        unselectedItemColor: Colors.white,
+        fixedColor: Colors.yellow,
         onTap: (index)  {
             setState((){
               selectedIndex = index;
@@ -312,10 +368,14 @@ class _TransactionListState extends State<TransactionList> {
               }
 
               if (selectedIndex == 2)
-                print ("hello world");
+                Navigator.push(context,MaterialPageRoute(builder: (BuildContext context) => Filter()));
 
-              if (selectedIndex == 0)
-                _calcTotal();
+              if (selectedIndex == 0){
+                  _calcTotal();
+                  //initState();
+                  
+              }
+                
             });
           }
       ),
