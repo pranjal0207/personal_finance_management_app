@@ -50,7 +50,7 @@ class FilterState extends State<Filter> {
       context: context,
       builder: (context) => AlertDialog(
         title: Text(transaction.name),
-        content: Text("Amount Rs.${transaction.amount} \nDate : .${transaction.date}"),
+        content: Text("Amount ₹${transaction.amount} \nDate : .${transaction.date}"),
         actions: <Widget>[
           /*FlatButton(
             onPressed: () => Navigator.pushReplacement(
@@ -107,7 +107,7 @@ class FilterState extends State<Filter> {
                         onChanged: (value) {
                           setState(() {
                             values = value;
-                            labels = RangeLabels("Rs. " + value.start.toInt().toString(), "Rs. " + value.end.toInt().toString());
+                            labels = RangeLabels("₹ " + value.start.toInt().toString(), "Rs. " + value.end.toInt().toString());
                           });
                         }
                     ) 
@@ -140,28 +140,55 @@ class FilterState extends State<Filter> {
             Container(
               margin : EdgeInsets.only(top : 145),
               alignment: Alignment.topCenter,
-              child: RaisedButton(
-                    onPressed: (){
+              child: 
+                  RaisedButton(
+                      onPressed: (){
 
-                      DatabaseProvider.db.getfilters(values.start.toInt(), values.end.toInt(),  datecontroller.text).then(
-                        (mine) { 
-                          BlocProvider.of<TransactionBloc>(context).add(SetFilter(mine));
-                          print(mine);
-                        },
+                        DatabaseProvider.db.getfilters(values.start.toInt(), values.end.toInt(),  datecontroller.text).then(
+                          (mine) { 
+                            BlocProvider.of<TransactionBloc>(context).add(SetFilter(mine));
+                            print(mine);
+                          },
 
-                      );
-                    }, 
-                    child: Text(
-                      "Display Results",
-                      style: TextStyle(
-                        fontSize : 15,
-                      ),
-                    )
-                ),
+                        );
+                      }, 
+                      child: Text(
+                        "Display Results",
+                        style: TextStyle(
+                          fontSize : 15,
+                        ),
+                      )
+                  ),
+
+                  /*RaisedButton(
+                      onPressed: (){
+                        setState(() {
+                          values = RangeValues(1, 100000);
+                          datecontroller.text = " ";
+                        });
+                        
+                        DatabaseProvider.db.getfilters(values.start.toInt(), values.end.toInt(),  datecontroller.text).then(
+                          (mine) { 
+                            BlocProvider.of<TransactionBloc>(context).add(SetFilter(mine));
+                            print(mine);
+                          },
+
+                        );
+                      }, 
+                      child: Text(
+                        "Clear",
+                        style: TextStyle(
+                          fontSize : 15,
+                        ),
+                      )
+                  ),*/
+
+                
+              
             ),
 
             Container(
-                margin: EdgeInsets.only(top: 250, bottom: 0),
+                margin: EdgeInsets.only(top: 200, bottom: 0),
                 child: BlocConsumer<TransactionBloc, List<OTransaction>>(
                 builder: (context, filterlist) {
                 return ListView.separated(
@@ -172,13 +199,29 @@ class FilterState extends State<Filter> {
 
                     OTransaction trans = filterlist[index];
                     
-                    return ListTile(
-                        title: Text(trans.name, style: TextStyle(fontSize: 30)),
-                        subtitle: Text(
-                        "Amount: Rs. ${trans.amount} \nDate : ${trans.date}",
-                          style: TextStyle(fontSize: 20),
-                        ),
-                        onTap: () => showtransactionDialog(context, trans, index));
+                    return (
+                      Container(
+                        margin: EdgeInsets.only(left : 6, right : 6),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.only(
+                            bottomLeft : Radius.circular(10), 
+                            bottomRight: Radius.circular(10),
+                            topLeft: Radius.circular(10),
+                            topRight: Radius.circular(10)
+                          ),
+                          color: Colors.black12
+                        ),   
+                        child : 
+                        ListTile(
+                          title: Text(trans.name, style: TextStyle(fontSize: 30)),
+                          subtitle: Text(
+                          "₹ ${trans.amount} \nDate : ${trans.date}",
+                            style: TextStyle(
+                              fontSize: 20),
+                          ),
+                          onTap: () => showtransactionDialog(context, trans, index)),
+                      )
+                    );
                   },
                   itemCount: filterlist.length,
                   separatorBuilder: (BuildContext context, int index) => Divider(color: Colors.black),

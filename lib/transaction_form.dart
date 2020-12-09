@@ -47,8 +47,13 @@ class TransactionFormState extends State<TransactionForm> {
   Widget _buildName() {
     return TextFormField(
       initialValue: _name,
-      decoration: InputDecoration(labelText: 'Name'),
-      maxLength: 15,
+      decoration: InputDecoration(
+        labelText: 'Name',
+        prefixIcon: InkWell(
+          child : Icon(Icons.person) ,
+        ),
+      ),
+      //maxLength: 15,
       style: TextStyle(fontSize: 28),
       validator: (String value) {
         if (value.isEmpty) {
@@ -65,7 +70,12 @@ class TransactionFormState extends State<TransactionForm> {
 
   Widget _buildAmount() {
     return TextFormField(
-      decoration: InputDecoration(labelText: 'Amount'),
+      decoration: InputDecoration(
+        labelText: 'Amount',
+        prefixIcon: InkWell(
+          child : Icon(Icons.money) ,
+        ),  
+      ),
       keyboardType: TextInputType.number,
       style: TextStyle(fontSize: 28),
       validator: (String value) {
@@ -85,6 +95,7 @@ class TransactionFormState extends State<TransactionForm> {
 
   Widget _builddate(BuildContext context) {
     return TextFormField(
+      readOnly: true,
       controller: datecontroller,
       decoration: InputDecoration(
         labelText: 'Date',
@@ -116,7 +127,7 @@ class TransactionFormState extends State<TransactionForm> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("transaction Form")),
+      appBar: AppBar(title: Text("Transaction Form")),
       body: Container(
         margin: EdgeInsets.all(24),
         child: Form(

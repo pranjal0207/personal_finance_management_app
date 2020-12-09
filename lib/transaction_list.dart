@@ -19,7 +19,7 @@ class TransactionList extends StatefulWidget {
 class _TransactionListState extends State<TransactionList> {
   
   int sum;
-  double budget = 10000.0;
+  double budget = 30000.0;
   double percent = 0;
   String name = "User";
   String curmonth = "temp";
@@ -162,8 +162,8 @@ class _TransactionListState extends State<TransactionList> {
                 setState(() {
                   name = controller1.text;
                   budget = double.parse(controller2.text);
-                });
-                
+                  Navigator.pop(context);
+                });                 
             }, 
             child: Text("Save")
             ),)
@@ -210,13 +210,21 @@ class _TransactionListState extends State<TransactionList> {
                       ),
                     ),
 
-                    FlatButton(
-                      padding: EdgeInsets.only(left : 220),
-                      onPressed : () => showsettingDialog(context) ,
-                      child: Icon(Icons.settings))
+                    
                   ]
                   ),
                 ),
+
+              Container(
+                child : FlatButton(
+                      padding: EdgeInsets.only(top : 20, left : 350),
+                      onPressed : () => showsettingDialog(context) ,
+                      child: Icon(
+                          Icons.settings,
+                          color : Colors.white,
+                        )
+                      )
+              ),
 
               Container(
                 height: 25,
