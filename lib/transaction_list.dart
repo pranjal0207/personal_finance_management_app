@@ -197,7 +197,7 @@ class _TransactionListState extends State<TransactionList> {
               ),
 
               Container(
-                height:  25,
+                height:  33,
                 margin: EdgeInsets.only(top : 20, left : 17),
                 child: Row(
                   
