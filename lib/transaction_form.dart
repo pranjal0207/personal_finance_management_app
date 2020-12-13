@@ -73,7 +73,7 @@ class TransactionFormState extends State<TransactionForm> {
       decoration: InputDecoration(
         labelText: 'Amount',
         prefixIcon: InkWell(
-          child : Icon(Icons.money) ,
+          child : Icon(Icons.attach_money) ,
         ),  
       ),
       keyboardType: TextInputType.number,
