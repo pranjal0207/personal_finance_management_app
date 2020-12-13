@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'bloc/transaction_bloc.dart';
 import 'filter.dart';
+import 'stats.dart';
 
 class TransactionList extends StatefulWidget {
   const TransactionList({Key key}) : super(key: key);
@@ -23,7 +24,7 @@ class _TransactionListState extends State<TransactionList> {
   double percent = 0;
   String name = "User";
   String curmonth = "temp";
-  List months = ['January' , 'February','March','April','May','June','July','August','September','October','Novomber','December'];
+  List months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
   var controller1 = new TextEditingController();
   var controller2 = new TextEditingController();
 
@@ -306,7 +307,7 @@ class _TransactionListState extends State<TransactionList> {
               ),
 
               Container(
-                margin: EdgeInsets.only(top: 240, bottom: 0),
+                margin: EdgeInsets.only(top: 260, bottom: 0),
                 child: BlocConsumer<TransactionBloc, List<OTransaction>>(
                 builder: (context, transactionList) {
                 return ListView.separated(
@@ -355,12 +356,15 @@ class _TransactionListState extends State<TransactionList> {
       ),
        
       bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
         backgroundColor: Colors.blue,
         items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
               icon: Icon(Icons.home), title: Text('Home')),
           BottomNavigationBarItem(
-              icon: Icon(Icons.add), title: Text('ADD')),
+              icon: Icon(Icons.add), title: Text('Add')),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.equalizer), title: Text('Stats')),
           BottomNavigationBarItem(
               icon: Icon(Icons.filter_list), title: Text('Filters')),
         ],
@@ -374,14 +378,14 @@ class _TransactionListState extends State<TransactionList> {
                 Navigator.push(context,MaterialPageRoute(builder: (BuildContext context) => TransactionForm()));
                 selectedIndex = 0;
               }
-
               if (selectedIndex == 2)
+                Navigator.push(context,MaterialPageRoute(builder: (BuildContext context) => Stats()));
+              
+              if (selectedIndex == 3)
                 Navigator.push(context,MaterialPageRoute(builder: (BuildContext context) => Filter()));
-
               if (selectedIndex == 0){
                   _calcTotal();
-                  //initState();
-                  
+                  //initState();    
               }
                 
             });
