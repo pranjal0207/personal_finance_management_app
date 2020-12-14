@@ -1,5 +1,4 @@
 import 'package:intl/intl.dart';
-
 import 'Utils/DBHelper.dart';
 import 'Utils/transaction.dart';
 import 'package:personal_finance_management_app/events/add_transactions.dart';
@@ -10,7 +9,7 @@ import 'bloc/transaction_bloc.dart';
 
 
 class TransactionForm extends StatefulWidget {
-  final   OTransaction transaction;
+  final OTransaction transaction;
   final int transactionIndex;
 
   TransactionForm({this.transaction, this.transactionIndex});
@@ -25,6 +24,8 @@ class TransactionFormState extends State<TransactionForm> {
   String _name;
   int _amount;
   var datecontroller = TextEditingController();
+  final List<String> items = <String>['Category', 'Food', 'Clothing', 'Daily Needs', 'Miscellaneous'];
+  String selectedItem = 'Category';
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -115,6 +116,27 @@ class TransactionFormState extends State<TransactionForm> {
     );
   }
 
+  Widget _buildcategories(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical : 36.0),
+      child: DropdownButton<String>(
+        value: selectedItem,
+        onChanged: (String string) => setState(() => selectedItem = string),
+        selectedItemBuilder: (BuildContext context) {
+          return items.map<Widget>((String item) {
+            return Text(item);
+          }).toList();
+        },
+        items: items.map((String item) {
+          return DropdownMenuItem<String>(
+            child: Text('$item'),
+            value: item,
+          );
+        }).toList(),
+      ),
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -138,6 +160,7 @@ class TransactionFormState extends State<TransactionForm> {
               _buildName(),
               _buildAmount(),
               _builddate(context),
+              _buildcategories(context),
               SizedBox(height: 16),
 
               SizedBox(height: 20),
