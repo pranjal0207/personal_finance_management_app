@@ -9,6 +9,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'bloc/transaction_bloc.dart';
 import 'filter.dart';
 import 'stats.dart';
+import 'settings.dart';
 
 class TransactionList extends StatefulWidget {
   const TransactionList({Key key}) : super(key: key);
@@ -219,7 +220,7 @@ class _TransactionListState extends State<TransactionList> {
               Container(
                 child : FlatButton(
                       padding: EdgeInsets.only(top : 20, left : 350),
-                      onPressed : () => showsettingDialog(context) ,
+                      onPressed : () => Navigator.push(context,MaterialPageRoute(builder: (BuildContext context) => Settings())) ,
                       child: Icon(
                           Icons.settings,
                           color : Colors.white,
@@ -380,14 +381,12 @@ class _TransactionListState extends State<TransactionList> {
               }
               if (selectedIndex == 2)
                 Navigator.push(context,MaterialPageRoute(builder: (BuildContext context) => Stats()));
-              
               if (selectedIndex == 3)
                 Navigator.push(context,MaterialPageRoute(builder: (BuildContext context) => Filter()));
               if (selectedIndex == 0){
                   _calcTotal();
                   //initState();    
               }
-                
             });
           }
       ),
