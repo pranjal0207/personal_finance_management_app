@@ -1,4 +1,5 @@
-import 'package:personal_finance_management_app/events/set_filter.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:personal_finance_management_app/utils/FirestoreHelper.dart';
 import 'Utils/DBHelper.dart';
 import 'Utils/transaction.dart';
 import 'package:personal_finance_management_app/events/delete_transactions.dart';
@@ -19,18 +20,30 @@ class FilterState extends State<Filter> {
   RangeValues values = RangeValues(1, 10000);
   RangeLabels labels = RangeLabels('1', '10000');
   TextEditingController datecontroller = new TextEditingController();
+  
 
-   DateTime _dateTime = DateTime.now();
+
+  DateTime _dateTime = DateTime.now();
   var date;
 
+  QuerySnapshot fillist;
+  final fs = OFirestoreService();
+
     void initState() {
-    super.initState();
-    DatabaseProvider.db.gettransactions().then(
-      (filterList) { 
-        BlocProvider.of<TransactionBloc>(context).add(SetFilter(filterList));
-      },
-    );    
-  }
+      super.initState();
+      fs.getData().then((result){
+        setState(() {
+          fillist = result; 
+          print (fillist.docs[0].data()['name']);
+        });
+      });
+
+      /*DatabaseProvider.db.gettransactions().then(
+        (filterList) { 
+          BlocProvider.of<TransactionBloc>(context).add(SetFilter(filterList));
+        },
+      );*/    
+    }
 
   _transactionDate (BuildContext context) async{
     var pickdate = await showDatePicker(context: context, initialDate: _dateTime, firstDate: DateTime(2000), lastDate: _dateTime);
@@ -143,14 +156,12 @@ class FilterState extends State<Filter> {
               child: 
                   RaisedButton(
                       onPressed: (){
-
-                        DatabaseProvider.db.getfilters(values.start.toInt(), values.end.toInt(),  datecontroller.text).then(
-                          (mine) { 
-                            BlocProvider.of<TransactionBloc>(context).add(SetFilter(mine));
-                            print(mine);
-                          },
-
-                        );
+                        fs.getFilter(values.start.toInt(),values.end.toInt() , datecontroller.text).then((result){
+                          setState(() {
+                            fillist = result; 
+                            print (fillist.docs[0].data()['name']);
+                          });
+                        });
                       }, 
                       child: Text(
                         "Display Results",
@@ -191,17 +202,11 @@ class FilterState extends State<Filter> {
                 margin: EdgeInsets.only(top: 200, bottom: 0),
                 child: BlocConsumer<TransactionBloc, List<OTransaction>>(
                 builder: (context, filterlist) {
-                return ListView.separated(
-                  padding: EdgeInsets.only(top: 0),
-
-                  itemBuilder: (BuildContext context, int index) {
-                    print("Transaction List: $filterlist");
-
-                    OTransaction trans = filterlist[index];
-                    
-                    return (
-                      Container(
-                        margin: EdgeInsets.only(left : 6, right : 6),
+                return ListView.builder(
+                    itemCount: fillist.docs.length,
+                    itemBuilder: (context,i){
+                    return Container( 
+                      margin: EdgeInsets.only(left : 6, right : 6),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.only(
                             bottomLeft : Radius.circular(10), 
@@ -210,22 +215,14 @@ class FilterState extends State<Filter> {
                             topRight: Radius.circular(10)
                           ),
                           color: Colors.black12
-                        ),   
-                        child : 
-                        ListTile(
-                          title: Text(trans.name, style: TextStyle(fontSize: 30)),
-                          subtitle: Text(
-                          "₹ ${trans.amount} \nDate : ${trans.date}",
-                            style: TextStyle(
-                              fontSize: 20),
-                          ),
-                          onTap: () => showtransactionDialog(context, trans, index)),
-                      )
-                    );
-                  },
-                  itemCount: filterlist.length,
-                  separatorBuilder: (BuildContext context, int index) => Divider(color: Colors.black),
-                  );
+                        ), 
+                      child : new ListTile(
+                      title: Text(fillist.docs[i].data()['name'], style: TextStyle(fontSize: 30)) ,
+                      subtitle: Text("Amount : "+fillist.docs[i].data()['amount'].toString()+'\n'+"Date :"+fillist.docs[i].data()['date'], style: TextStyle(fontSize: 20)),
+                      //onTap: () => showtransactionDialog(context, flist, i),
+                    )) ; 
+                  }
+                );
                 },
                 listener: (BuildContext context, transList) {},
               ),

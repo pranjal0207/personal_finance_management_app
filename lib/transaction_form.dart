@@ -1,8 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:intl/intl.dart';
-
 import 'Utils/DBHelper.dart';
 import 'Utils/transaction.dart';
-import 'package:personal_finance_management_app/events/add_transactions.dart';
 import 'package:personal_finance_management_app/events/update_transactions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -10,7 +10,7 @@ import 'bloc/transaction_bloc.dart';
 
 
 class TransactionForm extends StatefulWidget {
-  final   OTransaction transaction;
+  final OTransaction transaction;
   final int transactionIndex;
 
   TransactionForm({this.transaction, this.transactionIndex});
@@ -30,6 +30,8 @@ class TransactionFormState extends State<TransactionForm> {
 
   DateTime _dateTime = DateTime.now();
   var date;
+
+
 
   _transactionDate (BuildContext context) async{
     var pickdate = await showDatePicker(context: context, initialDate: _dateTime, firstDate: DateTime(2000), lastDate: _dateTime);
@@ -122,6 +124,8 @@ class TransactionFormState extends State<TransactionForm> {
       _name = widget.transaction.name;
       _amount = widget.transaction.amount;
     }
+
+
   }
 
   @override
@@ -160,13 +164,17 @@ class TransactionFormState extends State<TransactionForm> {
                           date : datecontroller.text
                         );
 
-                        DatabaseProvider.db.insert(trans).then(
+                        /*DatabaseProvider.db.insert(trans).then(
                               (storedtransaction) => BlocProvider.of<TransactionBloc>(context).add(
                                 Addtransaction(storedtransaction),
                               ),
-                            );
+                            );*/
+                        
+                        Firebase.initializeApp();
+                        CollectionReference collectionReference = FirebaseFirestore.instance.collection('records');
+                        collectionReference.add(trans.toMap());
                                                 
-                          Navigator.pop(context);
+                         Navigator.pop(context);
                       },
                     )
                   : Row(

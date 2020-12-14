@@ -2,6 +2,7 @@ import 'package:personal_finance_management_app/utils/DBHelper.dart';
 
 class OTransaction {
   int id;
+  String fid;
   String name;
   int amount;
   String date;
