@@ -16,10 +16,10 @@ class StatState extends State<Stats> {
     final random = Random();
  
     final StatData = [
-      Stat('Food', random.nextInt(5000)),
-      Stat('Clothing', random.nextInt(5000)),
-      Stat('Daily Needs', random.nextInt(5000)),
-      Stat('Misc', random.nextInt(5000)),
+      Stat('Food', random.nextInt(5000), charts.MaterialPalette.yellow.shadeDefault),
+      Stat('Clothing', random.nextInt(5000), charts.MaterialPalette.green.shadeDefault),
+      Stat('Daily Needs', random.nextInt(5000), charts.MaterialPalette.blue.shadeDefault),
+      Stat('Misc', random.nextInt(5000), charts.MaterialPalette.red.shadeDefault),
     ];
  
     /*final tabletStatData = [
@@ -43,10 +43,18 @@ class StatState extends State<Stats> {
         id: 'Stat',
         domainFn: (Stat amount, _) => amount.category,
         measureFn: (Stat amount, _) => amount.amount,
+        colorFn: (Stat amount, _) => amount.color,
         data: StatData,
-        fillColorFn: (Stat amount, _) {
-          return charts.MaterialPalette.blue.shadeDefault;
-        },
+        /*fillColorFn: (Stat amount, _) {
+          if (amount.category == 'Food'){
+          return charts.MaterialPalette.yellow.shadeDefault;}
+          if (amount.category == 'Clothing'){
+          return charts.MaterialPalette.green.shadeDefault;}
+          if (amount.category == 'Daily Needs'){
+          return charts.MaterialPalette.blue.shadeDefault;}
+          if (amount.category == 'Misc'){
+          return charts.MaterialPalette.red.shadeDefault;}
+        },*/
       )/*,
       charts.Series<Stat, String>(
         id: 'Stat',
@@ -74,15 +82,15 @@ class StatState extends State<Stats> {
       seriesList,
       animate: true,
       vertical: true,
-      /*barGroupingType: charts.BarGroupingType.grouped,
-      defaultRenderer: charts.BarRendererConfig(
-        groupingType: charts.BarGroupingType.grouped,
-        strokeWidthPx: 1.0,
-      ),
-      domainAxis: charts.OrdinalAxisSpec(
-        renderSpec: charts.NoneRenderSpec(),
-      ),*/
     );
+  }
+
+  pieChart() {
+    return charts.PieChart(
+      seriesList,
+      animate: true,
+      defaultRenderer: charts.ArcRendererConfig(
+         arcRendererDecorators: [charts.ArcLabelDecorator()]));
   }
 
   @override
@@ -93,20 +101,55 @@ class StatState extends State<Stats> {
 
   @override
   Widget build(BuildContext context) {
-    print("Building entire filter list scaffold");
+    print("Building bar graph");
     return Scaffold(
       appBar: AppBar(title : Text("Stats"),),
       body : Container(
-        padding: EdgeInsets.only(top : 10.0, left: 10.0, right :10.0, bottom : 400.0),
-        child: barChart(),           
+        child: Stack(
+          children: <Widget>[
+            Container(
+              child: Text("Bar Graph",
+              style: TextStyle(fontSize: 20),
+              ),
+              padding: EdgeInsets.only(top: 10.0, left: 10.0),
+            ),
+            Container(
+              child: barChart(),
+              padding: EdgeInsets.only(top : 30.0, left: 10.0, right :10.0, bottom : 400.0),
+            ),
+            Container(
+              child: Text("Pie Chart",
+              style: TextStyle(fontSize: 20),
+              ),
+              padding: EdgeInsets.only(top: 340.0, left: 10.0),
+            ),
+            Container(
+              child: pieChart(),
+              padding: EdgeInsets.only(top : 350.0, left: 10.0, right : 10.0),
+            ),
+          ],
+        ),          
         ),
     );
   }
+  
+  /*@override
+  Widget buildpie(BuildContext context) {
+    print("Building bar graph");
+    return Scaffold(
+      appBar: AppBar(title : Text("Stats"),),
+      body : Container(
+        padding: EdgeInsets.only(top : 500.0, left: 10.0, right :10.0, bottom : 10.0),
+        child: pieChart(),          
+        ),
+    );
+  }*/
 }
 
 class Stat {
   final String category;
   final int amount;
- 
-  Stat(this.category, this.amount);
+  final charts.Color color;
+
+  Stat(this.category, this.amount, this.color);
 }
