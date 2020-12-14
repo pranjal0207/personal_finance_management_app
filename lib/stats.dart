@@ -15,7 +15,7 @@ class StatState extends State<Stats> {
   static List<charts.Series<Stat, String>> _createRandomData() {
     final random = Random();
  
-    final desktopStatData = [
+    final StatData = [
       Stat('Food', random.nextInt(5000)),
       Stat('Clothing', random.nextInt(5000)),
       Stat('Daily Needs', random.nextInt(5000)),
@@ -43,7 +43,7 @@ class StatState extends State<Stats> {
         id: 'Stat',
         domainFn: (Stat amount, _) => amount.category,
         measureFn: (Stat amount, _) => amount.amount,
-        data: desktopStatData,
+        data: StatData,
         fillColorFn: (Stat amount, _) {
           return charts.MaterialPalette.blue.shadeDefault;
         },
@@ -97,7 +97,7 @@ class StatState extends State<Stats> {
     return Scaffold(
       appBar: AppBar(title : Text("Stats"),),
       body : Container(
-        padding: EdgeInsets.only(top : 10.0, left: 10.0, right :10.0, bottom : 400),
+        padding: EdgeInsets.only(top : 10.0, left: 10.0, right :10.0, bottom : 400.0),
         child: barChart(),           
         ),
     );
