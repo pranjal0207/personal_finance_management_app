@@ -112,71 +112,6 @@ class _TransactionListState extends State<TransactionList> {
     );
   }
 
-  showsettingDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context){
-        return AlertDialog(
-          title: Text("Settings"),
-          content : Stack(children: <Widget>[
-            Container(
-              margin: EdgeInsets.only(top :0),
-              child: TextFormField(
-              controller: controller1,
-              //initialValue: name,
-              decoration: InputDecoration(labelText: 'Name'),
-              maxLength: 15,
-              style: TextStyle(fontSize: 20),
-              validator: (String value) {
-                if (value.isEmpty) {
-                  return 'Name is Required';
-                }
-
-                return null;
-              }
-            ),
-
-            ),
-
-            Container(
-              margin: EdgeInsets.only(top : 65),
-              child: TextFormField(
-              controller: controller2,
-              //initialValue: budget.toString(),
-              decoration: InputDecoration(labelText: 'Budget'),
-              maxLength: 15,
-              style: TextStyle(fontSize: 20),
-              validator: (String value) {
-                int calories = int.tryParse(value);
-
-                if (calories == null || calories == 0) {
-                  return 'Amount must be greater than 0';
-                }
-                return null;
-              },
-              )
-            ),  
-    
-            Container(
-              margin: EdgeInsets.only(top : 140),
-              child: FlatButton(
-            onPressed: (){
-                setState(() {
-                  name = controller1.text;
-                  budget = double.parse(controller2.text);
-                  Navigator.pop(context);
-                });                 
-            }, 
-            child: Text("Save")
-            ),)
-           
-          ]
-          ) 
-        );
-      }
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     print("Building entire transaction list scaffold");
@@ -219,7 +154,7 @@ class _TransactionListState extends State<TransactionList> {
 
               Container(
                 child : FlatButton(
-                      padding: EdgeInsets.only(top : 20, left : 350),
+                      padding: EdgeInsets.only(top : 20, left : 370),
                       onPressed : () => Navigator.push(context,MaterialPageRoute(builder: (BuildContext context) => Settings())) ,
                       child: Icon(
                           Icons.settings,
@@ -272,7 +207,7 @@ class _TransactionListState extends State<TransactionList> {
                   children: [
 
                   Container(
-                    margin: EdgeInsets.only(right: 80),
+                    margin: EdgeInsets.only(right: 65),
                     child: LinearProgressIndicator(
                     value : (percent),
                     backgroundColor: Colors.white,
@@ -288,7 +223,7 @@ class _TransactionListState extends State<TransactionList> {
               ),
 
               Container(
-                margin: EdgeInsets.only(top : 158, left : 340),
+                margin: EdgeInsets.only(top : 158, left : 350),
                 child: Text(
                     ((budget-sum) / budget * 100).toStringAsFixed(0) + "%",
                     style: TextStyle(

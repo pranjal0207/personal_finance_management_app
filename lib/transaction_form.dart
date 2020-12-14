@@ -129,7 +129,7 @@ class TransactionFormState extends State<TransactionForm> {
         },
         items: items.map((String item) {
           return DropdownMenuItem<String>(
-            child: Text('Log $item'),
+            child: Text('$item'),
             value: item,
           );
         }).toList(),

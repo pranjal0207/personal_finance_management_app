@@ -16,10 +16,11 @@ class StatState extends State<Stats> {
     final random = Random();
  
     final StatData = [
-      Stat('Food', random.nextInt(5000), charts.MaterialPalette.yellow.shadeDefault),
+      Stat('Food', random.nextInt(5000), charts.MaterialPalette.purple.shadeDefault),
       Stat('Clothing', random.nextInt(5000), charts.MaterialPalette.green.shadeDefault),
       Stat('Daily Needs', random.nextInt(5000), charts.MaterialPalette.blue.shadeDefault),
       Stat('Misc', random.nextInt(5000), charts.MaterialPalette.red.shadeDefault),
+      Stat('Remaining', random.nextInt(5000), charts.MaterialPalette.gray.shadeDefault),
     ];
  
     /*final tabletStatData = [
@@ -109,17 +110,17 @@ class StatState extends State<Stats> {
           children: <Widget>[
             Container(
               child: Text("Bar Graph",
-              style: TextStyle(fontSize: 20),
+                style: TextStyle(fontSize: 20),
               ),
-              padding: EdgeInsets.only(top: 10.0, left: 10.0),
+              padding: EdgeInsets.only(top: 20.0, left: 10.0),
             ),
             Container(
               child: barChart(),
-              padding: EdgeInsets.only(top : 30.0, left: 10.0, right :10.0, bottom : 400.0),
+              padding: EdgeInsets.only(top : 40.0, left: 10.0, right :10.0, bottom : 400.0),
             ),
             Container(
               child: Text("Pie Chart",
-              style: TextStyle(fontSize: 20),
+                style: TextStyle(fontSize: 20),
               ),
               padding: EdgeInsets.only(top: 340.0, left: 10.0),
             ),
