@@ -12,8 +12,12 @@ import 'bloc/transaction_bloc.dart';
 class TransactionForm extends StatefulWidget {
   final OTransaction transaction;
   final int transactionIndex;
+  final double budget;
+  final double sum;
+  final double miscsum;
+  final double misc;
 
-  TransactionForm({this.transaction, this.transactionIndex});
+  TransactionForm({this.transaction, this.transactionIndex, this.budget, this.sum, this.miscsum, this.misc});
 
   @override
   State<StatefulWidget> createState() {
@@ -24,7 +28,15 @@ class TransactionForm extends StatefulWidget {
 class TransactionFormState extends State<TransactionForm> {
   String _name;
   int _amount;
+  int budget;
+  int sum;
+  int miscsum;
+  int misc;
   var datecontroller = TextEditingController();
+  final List<String> items = <String>[ 'Food', 'Clothing', 'Daily Needs', 'Miscellaneous'];
+  String selectedItem = "Category";
+
+  //TransactionFormState (this.budget, this.sum, this.miscsum, this.misc);
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -46,6 +58,60 @@ class TransactionFormState extends State<TransactionForm> {
     }
   }
 
+  shownotiDialog1 (BuildContext context){
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title : Text("Warning"),
+        content: Text("You have exhausted your budget for the month."),
+        actions: <Widget>[
+          FlatButton(
+            onPressed: (){
+              Navigator.pop(context);
+            }, 
+            child: Text("Okay")
+          )
+        ],
+      )
+    );
+  }
+
+  shownotiDialog2 (BuildContext context){
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title : Text("Warning"),
+        content: Text("You have exhausted 90% of your budget for the month. Spend wisely!"),
+        actions: <Widget>[
+          FlatButton(
+            onPressed: (){
+              Navigator.pop(context);
+            }, 
+            child: Text("Okay")
+          )
+        ],
+      )
+    );
+  }
+
+  shownotiDialog3 (BuildContext context){
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title : Text("Warning"),
+        content: Text("You have exhausted your Miscellaneous budget for the month. Spend wisely!"),
+        actions: <Widget>[
+          FlatButton(
+            onPressed: (){
+              Navigator.pop(context);
+            }, 
+            child: Text("Okay")
+          )
+        ],
+      )
+    );
+  }
+
   Widget _buildName() {
     return TextFormField(
       initialValue: _name,
@@ -56,7 +122,7 @@ class TransactionFormState extends State<TransactionForm> {
         ),
       ),
       //maxLength: 15,
-      style: TextStyle(fontSize: 28),
+      style: TextStyle(fontSize: 20),
       validator: (String value) {
         if (value.isEmpty) {
           return 'Name is Required';
@@ -79,7 +145,7 @@ class TransactionFormState extends State<TransactionForm> {
         ),  
       ),
       keyboardType: TextInputType.number,
-      style: TextStyle(fontSize: 28),
+      style: TextStyle(fontSize: 20),
       validator: (String value) {
         int calories = int.tryParse(value);
 
@@ -109,11 +175,34 @@ class TransactionFormState extends State<TransactionForm> {
           child: Icon(Icons.calendar_today),
         )
       ),
-      style: TextStyle(fontSize: 28),
+      style: TextStyle(fontSize: 20),
       validator: (String value) {
+        
         return null;
-      },
-    
+      }
+    );
+  }
+
+  Widget _buildcategories(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical : 10.0),
+      child: DropdownButton<String>(
+        //value: selectedItem,
+        hint: Text ('Category'),
+        onChanged: (String string) => setState(() => selectedItem = string),
+        selectedItemBuilder: (BuildContext context) {
+          return items.map<Widget>((String item) {
+            return Text(item);
+          }).toList();
+        },
+        items: items.map((String item) {
+          return DropdownMenuItem<String>(
+            child: Text('$item'),
+            value: item,
+          );
+        }).toList(),
+      
+      ),
     );
   }
 
@@ -137,16 +226,19 @@ class TransactionFormState extends State<TransactionForm> {
         child: Form(
           key: _formKey,
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
               _buildName(),
               _buildAmount(),
               _builddate(context),
-              SizedBox(height: 16),
+              SizedBox(height : 20),
+              _buildcategories(context),
+              //SizedBox(height: 5),
 
-              SizedBox(height: 20),
+              //SizedBox(height: 5),
               widget.transaction == null
                   ? RaisedButton(
+                      padding: EdgeInsets.only(top : 0),
                       child: Text(
                         'Submit',
                         style: TextStyle(color: Colors.blue, fontSize: 16),
@@ -160,8 +252,9 @@ class TransactionFormState extends State<TransactionForm> {
 
                         OTransaction trans = OTransaction(
                           name: _name,
-                          amount: _amount,
-                          date : datecontroller.text
+                          amount : _amount,
+                          date : datecontroller.text,
+                          category : selectedItem
                         );
 
                         /*DatabaseProvider.db.insert(trans).then(
@@ -169,7 +262,22 @@ class TransactionFormState extends State<TransactionForm> {
                                 Addtransaction(storedtransaction),
                               ),
                             );*/
-                        
+
+
+                            /*print (widget.sum.toString());
+                            if (widget.sum >= widget.budget){
+                              shownotiDialog1(context);
+                            }
+
+                            if (widget.sum >= (0.9*widget.budget) && widget.sum < widget.budget){
+                              shownotiDialog2(context);
+                            }
+
+                            if (widget.miscsum >= widget.misc){
+                              shownotiDialog3(context);
+                            }*/
+
+                        print (selectedItem);
                         Firebase.initializeApp();
                         CollectionReference collectionReference = FirebaseFirestore.instance.collection('records');
                         collectionReference.add(trans.toMap());

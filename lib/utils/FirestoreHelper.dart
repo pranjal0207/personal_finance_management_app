@@ -20,8 +20,26 @@ class OFirestoreService {
     }
 
     getFilter(int f, int l, String date) async{
+
       // ignore: deprecated_member_use
-      return await _db.collection('records').where('amount', isGreaterThanOrEqualTo: f).where('amount', isLessThanOrEqualTo: l).getDocuments();
+     /* if (f >=0 && l<=100000 && date == "")
+        return await _db.collection('records').where('amount', isGreaterThanOrEqualTo: f).where('amount', isLessThanOrEqualTo: l).getDocuments();
+      
+      else
+        return await _db.collection('records').where('date', isEqualTo: date).getDocuments();*/
+
+      // ignore: deprecated_member_use
+      var a = await _db.collection('records').where('amount', isGreaterThanOrEqualTo: f).where('amount', isLessThanOrEqualTo: l).getDocuments();
+      // ignore: deprecated_member_use
+      
+      // ignore: deprecated_member_use
+      var b = await _db.collection('records').where('date', isEqualTo: date).getDocuments();
+
+      if (date == "")
+        return a;
+
+      else
+        return b;      
     }
 
     deletedata(id){

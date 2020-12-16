@@ -12,6 +12,7 @@ import 'bloc/transaction_bloc.dart';
 import 'filter.dart';
 import 'utils/FirestoreHelper.dart';
 import 'stats.dart';
+import 'settings.dart';
 
 class TransactionList extends StatefulWidget {
   const TransactionList({Key key}) : super(key: key);
@@ -22,29 +23,40 @@ class TransactionList extends StatefulWidget {
 
 class _TransactionListState extends State<TransactionList> {
   
-  int sum;
+  var result;
+  double sum;
   double budget = 30000.0;
+  double misc = 10000.0;
   double percent = 0;
-  String name = "User";
+  String name = "user";
   String curmonth = "temp";
   List months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
   var controller1 = new TextEditingController();
   var controller2 = new TextEditingController();
   QuerySnapshot flist;
   final fs = OFirestoreService();
+  double miscsum = 0;
+  double tempmisc = 0;
 
   @override
   void initState() {
     sum = 0;
     super.initState();
     
-   
+      miscsum = 0;
       fs.getData().then((result){
         setState(() {
           flist = result; 
           print (flist.docs[0].data()['name']);
         });
       });
+
+      /*name = result[0];
+      budget = double.parse(result[1].toString());
+      misc = double.parse(result[2].toString());*/
+
+      print (name); 
+      print (budget.toString());
     /*DatabaseProvider.db.gettransactions().then(
       (transactionList) { 
         BlocProvider.of<TransactionBloc>(context).add(SetTransactions(transactionList));
@@ -57,12 +69,25 @@ class _TransactionListState extends State<TransactionList> {
 
   var temp;
   void _calcTotal() async{
-    var total = 0;
+    double total = 0;
     //print("njfsfj");
+    int flag = 0;
+    tempmisc = 0;
 
-    for (int i = 0; i < flist.docs.length; i++)
+    for (int i = 0; i < flist.docs.length; i++){
       total = total +  flist.docs[i].data()['amount'];
 
+      if (flist.docs[i].data()['category'] == 'Miscellaneous'){
+        tempmisc = tempmisc + flist.docs[i].data()['amount'];
+        print ("loop" + flist.docs[i].data()['amount'].toString());
+        flag =1;
+      }
+    }
+
+    if (flag == 0 ){
+      tempmisc = 0;
+    }
+    
     print(total);
     /*if (total == null) {
       sum = ;
@@ -82,6 +107,8 @@ class _TransactionListState extends State<TransactionList> {
     setState(() {
       sum = total;
       percent = percent;
+      miscsum = tempmisc;
+      print ("calc miscsum = " +miscsum.toString());
       //curmonth = months[cur+1];
     });  
 }
@@ -97,6 +124,61 @@ class _TransactionListState extends State<TransactionList> {
     Text("Home"),
     Text("Filter")
   ];
+
+  shownotiDialog1 (BuildContext context){
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title : Text("Warning"),
+        content: Text("You have exhausted your budget for the month."),
+        actions: <Widget>[
+          FlatButton(
+            onPressed: (){
+              Navigator.pop(context);
+            }, 
+            child: Text("Okay")
+          )
+        ],
+      )
+    );
+  }
+
+  shownotiDialog2 (BuildContext context){
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title : Text("Warning"),
+        content: Text("You have exhausted 90% of your budget for the month. Spend wisely!"),
+        actions: <Widget>[
+          FlatButton(
+            onPressed: (){
+              Navigator.pop(context);
+            }, 
+            child: Text("Okay")
+          )
+        ],
+      )
+    );
+  }
+
+  shownotiDialog3 (BuildContext context){
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title : Text("Warning"),
+        content: Text("You have exhausted your Miscellaneous budget for the month. Spend wisely!"),
+        actions: <Widget>[
+          FlatButton(
+            onPressed: (){
+              Navigator.pop(context);
+            }, 
+            child: Text("Okay")
+          )
+        ],
+      )
+    );
+  }
+  
 
   showtransactionDialog(BuildContext context, QuerySnapshot flist, var i) {
     showDialog(
@@ -124,71 +206,6 @@ class _TransactionListState extends State<TransactionList> {
           ),
         ],
       ),
-    );
-  }
-
-  showsettingDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context){
-        return AlertDialog(
-          title: Text("Settings"),
-          content : Stack(children: <Widget>[
-            Container(
-              margin: EdgeInsets.only(top :0),
-              child: TextFormField(
-              controller: controller1,
-              //initialValue: name,
-              decoration: InputDecoration(labelText: 'Name'),
-              maxLength: 15,
-              style: TextStyle(fontSize: 20),
-              validator: (String value) {
-                if (value.isEmpty) {
-                  return 'Name is Required';
-                }
-
-                return null;
-              }
-            ),
-
-            ),
-
-            Container(
-              margin: EdgeInsets.only(top : 65),
-              child: TextFormField(
-              controller: controller2,
-              //initialValue: budget.toString(),
-              decoration: InputDecoration(labelText: 'Budget'),
-              maxLength: 15,
-              style: TextStyle(fontSize: 20),
-              validator: (String value) {
-                int calories = int.tryParse(value);
-
-                if (calories == null || calories == 0) {
-                  return 'Amount must be greater than 0';
-                }
-                return null;
-              },
-              )
-            ),  
-    
-            Container(
-              margin: EdgeInsets.only(top : 140),
-              child: FlatButton(
-            onPressed: (){
-                setState(() {
-                  name = controller1.text;
-                  budget = double.parse(controller2.text);
-                  Navigator.pop(context);
-                });                 
-            }, 
-            child: Text("Save")
-            ),)
-           
-          ]
-          ) 
-        );
-      }
     );
   }
 
@@ -225,22 +242,66 @@ class _TransactionListState extends State<TransactionList> {
                         color: Colors.white,
                         fontSize: 25
                       ),
-                    ),
-
-                    
+                    ),                    
                   ]
                   ),
                 ),
 
               Container(
+                margin: EdgeInsets.only(top : 10, left : 305),
+                width: 50,
                 child : FlatButton(
-                      padding: EdgeInsets.only(top : 20, left : 350),
-                      onPressed : () => showsettingDialog(context) ,
+                      onPressed : () { 
+                       fs.getData().then((result){
+                          setState(() {
+                            flist = result; 
+                            _calcTotal();
+
+                            print(miscsum.toString());
+
+                            if (sum >= budget){
+                              shownotiDialog1(context);
+                            }
+
+                            if (sum >= (0.9*budget) && sum < budget){
+                              shownotiDialog2(context);
+                            }
+
+                            if (miscsum >= misc){
+                              print("miscsum = "+miscsum.toString());
+                              print("misc = "+misc.toString());
+                              shownotiDialog3(context);
+                            }
+                          });
+                        });
+                      },
+                      child: Icon(
+                          Icons.refresh,
+                          color : Colors.blue,
+                      )
+                )
+
+              ),
+
+              Container(
+                margin: EdgeInsets.only(top : 10, left : 350),
+                width: 50 ,
+                child : FlatButton(
+                      onPressed : () async{ 
+                        final result = await Navigator.push(context,MaterialPageRoute(builder: (BuildContext context) => OSettings()));
+                        print(result);
+                        setState(() {
+                          name = result[0];
+                          budget = double.parse(result[1].toString());
+                          misc = double.parse(result[2].toString());
+                          print(name + ""+ budget.toString() + "" + misc.toString());
+                        });
+                      },
                       child: Icon(
                           Icons.settings,
                           color : Colors.white,
-                        )
                       )
+                )
               ),
 
               Container(
@@ -271,7 +332,7 @@ class _TransactionListState extends State<TransactionList> {
                 height: 50,
                 margin: EdgeInsets.only (top : 105, left : 40),
                 child: Text(
-                  (sum).toString(),
+                  (sum).toStringAsFixed(0),
                   style: TextStyle(
                     color : Colors.white,
                     fontSize: 45
@@ -298,7 +359,7 @@ class _TransactionListState extends State<TransactionList> {
               ),
 
               Container(
-                margin: EdgeInsets.only(top : 158, left : 340),
+                margin: EdgeInsets.only(top : 158, left : 350),
                 child: Text(
                     ((budget-sum) / budget * 100).toStringAsFixed(0) + "%",
                     style: TextStyle(
@@ -318,7 +379,7 @@ class _TransactionListState extends State<TransactionList> {
               ),
 
               Container(
-                margin: EdgeInsets.only(top: 260, bottom: 0),
+                margin: EdgeInsets.only(top: 240, bottom: 0),
                 child: BlocConsumer<TransactionBloc, List<OTransaction>>(
                 builder: (context, transactionList) {
                   return ListView.builder(
@@ -338,7 +399,7 @@ class _TransactionListState extends State<TransactionList> {
                         ), 
                       child : new ListTile(
                       title: Text(flist.docs[i].data()['name'], style: TextStyle(fontSize: 30)) ,
-                      subtitle: Text("Amount : "+flist.docs[i].data()['amount'].toString()+'\n'+"Date :"+flist.docs[i].data()['date'], style: TextStyle(fontSize: 20)),
+                      subtitle: Text("Amount : ₹ "+flist.docs[i].data()['amount'].toString()+'\n'+"Date :"+flist.docs[i].data()['date']+"\nCategory : "+flist.docs[i].data()['category'], style: TextStyle(fontSize: 20)),
                       onTap: () => showtransactionDialog(context, flist, i),
                     )) ; 
                   }
@@ -410,12 +471,19 @@ class _TransactionListState extends State<TransactionList> {
             setState((){
               selectedIndex = index;
               if (selectedIndex == 1){
-                Navigator.push(context,MaterialPageRoute(builder: (BuildContext context) => TransactionForm()));
-                selectedIndex = 0;
+                Navigator.push(context,MaterialPageRoute(builder: (BuildContext context) => TransactionForm(budget: budget, sum : sum, misc: misc, miscsum: miscsum)));
+                fs.getData().then((result){
+                    setState(() {
+                      flist = result; 
+                      print (flist.docs[0].data()['name']);
+                    });
+                  });
               }
-              if (selectedIndex == 2)
-                Navigator.push(context,MaterialPageRoute(builder: (BuildContext context) => Stats()));
-              
+
+              if (selectedIndex == 2){
+                Navigator.push(context,MaterialPageRoute(builder: (BuildContext context) => Stats(flist: flist, l: [name, budget, misc])));
+              }
+
               if (selectedIndex == 3)
                 Navigator.push(context,MaterialPageRoute(builder: (BuildContext context) => Filter()));
               if (selectedIndex == 0){
@@ -427,14 +495,13 @@ class _TransactionListState extends State<TransactionList> {
                   print ("dsadsjdfj" + flist.toString());
                   print (flist.docs[0].data()['name']);
                   fs.getData().then((result){
-        setState(() {
-          flist = result; 
-          print (flist.docs[0].data()['name']);
-        });
-      });
+                    setState(() {
+                      flist = result; 
+                      print (flist.docs[0].data()['name']);
+                    });
+                  });
                   //initState();    
               }
-                
             });
           }
       ),

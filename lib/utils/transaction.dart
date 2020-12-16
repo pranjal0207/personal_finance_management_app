@@ -6,14 +6,16 @@ class OTransaction {
   String name;
   int amount;
   String date;
+  String category;
   
-  OTransaction({this.id, this.name, this.amount, this.date});
+  OTransaction({this.id, this.name, this.amount, this.date, this.category});
  
   Map<String, dynamic> toMap() {
     var map = <String, dynamic>{
       DatabaseProvider.COLUMN_NAME : name,
       DatabaseProvider.COLUMN_AMOUNT : amount,
       DatabaseProvider.COLUMN_DATE : date,
+      DatabaseProvider.COLUMN_CATEGORY : category
     };
     return map;
   }
@@ -22,5 +24,6 @@ class OTransaction {
     name = map[DatabaseProvider.COLUMN_NAME];
     amount = map[DatabaseProvider.COLUMN_AMOUNT];
     date = map[DatabaseProvider.COLUMN_DATE];
+    category = map[DatabaseProvider.COLUMN_DATE];
   }
 }

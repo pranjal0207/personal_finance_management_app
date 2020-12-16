@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
     return BlocProvider<TransactionBloc>(
       create: (context) => TransactionBloc(),
       child: MaterialApp(
-        title: 'Sqflite Tutorial',
+        title: 'Personal Finance Management App',
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),

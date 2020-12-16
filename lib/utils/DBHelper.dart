@@ -9,6 +9,7 @@ class DatabaseProvider {
   static const String COLUMN_NAME = "name";
   static const String COLUMN_AMOUNT = "amount";
   static const String COLUMN_DATE = "date";
+  static const String COLUMN_CATEGORY = "category";
 
   DatabaseProvider._();
   static final DatabaseProvider db = DatabaseProvider._();

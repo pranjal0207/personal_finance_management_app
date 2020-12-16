@@ -160,8 +160,12 @@ class FilterState extends State<Filter> {
                           setState(() {
                             fillist = result; 
                             print (fillist.docs[0].data()['name']);
+                            datecontroller.text= "";
+                            print ("complete");
                           });
                         });
+
+                        print(datecontroller.text);
                       }, 
                       child: Text(
                         "Display Results",
